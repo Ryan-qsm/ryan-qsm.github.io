@@ -10,16 +10,18 @@
     { src: "assets/bing/bing-20260908.jpg", caption: "安科拉附近的加比特凯尼海滩，卡纳塔克邦，印度" }
   ];
 
-  var lastUrl = null;
+  var baseUrl = "";
+  if (document.currentScript && document.currentScript.src) {
+    baseUrl = document.currentScript.src.replace(/javascripts\/hero-bg\.js.*$/, "");
+  }
 
   function setHeroBackground() {
     var hero = document.querySelector(".home-hero");
-    if (!hero) return;
-    if (location.href === lastUrl) return;
-    lastUrl = location.href;
+    if (!hero || hero.dataset.bgReady === "1") return;
+    hero.dataset.bgReady = "1";
 
     var pick = images[Math.floor(Math.random() * images.length)];
-    hero.style.backgroundImage = "url('" + pick.src + "')";
+    hero.style.backgroundImage = "url('" + baseUrl + pick.src + "')";
 
     var credit = hero.querySelector(".home-hero__credit");
     if (credit) {
