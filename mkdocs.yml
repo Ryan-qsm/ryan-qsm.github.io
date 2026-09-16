@@ -1,16 +1,78 @@
-site_name: 我的网站名称
+site_name: 钱实明的个人网站
 site_url: https://ryan-qsm.github.io/
+site_description: 钱实明的个人网站，记录学习笔记与生活分享
+site_author: 钱实明
+
+repo_url: https://github.com/Ryan-qsm/ryan-qsm.github.io
+repo_name: Ryan-qsm/ryan-qsm.github.io
 
 theme:
   name: material
   language: zh
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
   palette:
-    scheme: default
-    primary: white
-    accent: white
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: white
+      toggle:
+        icon: material/brightness-7
+        name: 切换到深色模式
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: white
+      toggle:
+        icon: material/brightness-4
+        name: 切换到浅色模式
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.top
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.footer
+    - search.suggest
+    - search.highlight
+    - toc.follow
+    - content.code.copy
+    - content.tooltips
+
+plugins:
+  - search:
+      separator: '[\s\u200b\-]'
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
 
 extra_css:
   - stylesheets/extra.css
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/Ryan-qsm
+      name: GitHub
+
+copyright: Copyright &copy; 2026 钱实明
 
 nav:
   - 主页: index.md

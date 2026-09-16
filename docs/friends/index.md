@@ -6,4 +6,5 @@
 
 - [MkDocs 官网](https://www.mkdocs.org/) —— 本网站使用的建站工具。
 - [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/) —— 本网站使用的主题。
-- [示例友链：小明的博客](https://example.com) —— 占位链接，以后可以替换成朋友的网站。
+
+想和我交换友链，欢迎发邮件到 2686828356@qq.com。
