@@ -1,0 +1,5 @@
+# MkDocs 构建产物（由 GitHub Actions 自动生成，无需上传）
+site/
+
+# Python 缓存
+__pycache__/

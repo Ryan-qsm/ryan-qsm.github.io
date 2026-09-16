@@ -1,0 +1,10 @@
+.home-hero {
+  text-align: center;
+  margin-top: 28vh;
+}
+
+.home-hero h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  color: #111111;
+}
