@@ -1,6 +1,7 @@
 <div class="home-hero">
   <h1>钱实明的个人网站</h1>
   <p>记录学习笔记与生活分享</p>
+  <span class="home-hero__credit"></span>
 </div>
 
 <div class="grid cards" markdown>
