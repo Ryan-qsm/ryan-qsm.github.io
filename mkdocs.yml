@@ -77,5 +77,10 @@ copyright: Copyright &copy; 2026 钱实明
 nav:
   - 主页: index.md
   - 课程: course/index.md
+  - 旅行: travel/index.md
+  - 文学电影: literature/index.md
+  - 美食: food/index.md
+  - 学习记录: study/index.md
+  - 体育: sports/index.md
   - 友链: friends/index.md
   - 关于: about/index.md
