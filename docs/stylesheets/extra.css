@@ -1,3 +1,25 @@
+/* ----- 全站：加宽版心，减少两侧留白 ----- */
+.md-grid {
+  max-width: 76.25rem;
+}
+
+/* ----- 首页：隐藏空的右侧目录栏，让内容铺开 ----- */
+.md-main__inner:has(.home-hero) .md-sidebar--secondary {
+  display: none;
+}
+
+/* ----- 浅色模式：极浅渐变底色 ----- */
+body[data-md-color-scheme="default"] {
+  background: linear-gradient(180deg, #ffffff 0%, #eef2fa 100%);
+}
+
+/* ----- 首页卡片：首张跨两列，网格排满 ----- */
+@media screen and (min-width: 60em) {
+  .home-cards > ul > li:first-child {
+    grid-column: span 2;
+  }
+}
+
 .home-hero {
   position: relative;
   display: flex;
@@ -5,7 +27,7 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 420px;
+  min-height: 460px;
   margin: 0 0 48px;
   padding: 48px 24px 64px;
   border-radius: 16px;
@@ -13,6 +35,7 @@
   background-color: #101322;
   background-size: cover;
   background-position: center;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 }
 
 .home-hero::before {
@@ -59,6 +82,6 @@
   }
 
   .home-hero h1 {
-    font-size: 2.2rem;
+    font-size: 1.5rem;
   }
 }

@@ -4,7 +4,7 @@
   <span class="home-hero__credit"></span>
 </div>
 
-<div class="grid cards" markdown>
+<div class="grid cards home-cards" markdown>
 
 -   :material-airplane:{ .lg .middle } **旅行**
 
