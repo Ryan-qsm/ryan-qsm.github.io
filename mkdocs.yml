@@ -1,4 +1,5 @@
 site_name: 我的网站名称
+site_url: https://ryan-qsm.github.io/
 
 theme:
   name: material
