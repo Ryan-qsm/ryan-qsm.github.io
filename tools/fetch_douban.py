@@ -6,9 +6,9 @@
 - 书籍：年度图书 + 分类主榜 + 副榜（约 150 本）
 - 电影：评分最高榜单（约 58 部，仅含有评分的条目）
 
-每条数据包含：标题、作者/导演信息、豆瓣评分、热门短评（无短评时用简介节选）、
-封面/海报（下载到 docs/assets/recommend/images/ 随仓库发布，豆瓣图床禁止站外直连）、
-豆瓣链接、来源榜单及排名。
+每条数据包含：标题、作者/导演信息、豆瓣评分、多条热门短评（无短评时用简介节选，
+页面每次打开随机展示一条）、封面/海报（下载到 docs/assets/recommend/images/ 随仓库发布，
+豆瓣图床禁止站外直连）、豆瓣链接、来源榜单及排名。
 
 数据输出到 docs/assets/recommend/books.json 和 movies.json，
 页面脚本（daily-pick.js）按日期轮播展示，每天 9:00（北京时间）切换。
@@ -112,9 +112,9 @@ def clean_text(text, limit):
     return text
 
 
-def best_comment(kind, item_id):
-    """取一条热门短评，返回 (短评, 星级)；没有则返回 ('', 0)"""
-    url = "https://m.douban.com/rexxar/api/v2/%s/%s/interests?count=5&order_by=hot" % (
+def hot_comments(kind, item_id, limit=5):
+    """取多条热门短评，返回 [{"text": 短评, "stars": 星级}]；没有则返回 []"""
+    url = "https://m.douban.com/rexxar/api/v2/%s/%s/interests?count=20&order_by=hot" % (
         kind,
         item_id,
     )
@@ -122,13 +122,19 @@ def best_comment(kind, item_id):
     try:
         data = get_json(url, referer)
     except RuntimeError:
-        return "", 0
+        return []
+    quotes = []
+    seen = set()
     for interest in data.get("interests", []):
         comment = re.sub(r"\s+", " ", interest.get("comment") or "").strip()
-        if 8 <= len(comment) <= QUOTE_MAX:
-            stars = (interest.get("rating") or {}).get("value") or 0
-            return comment, stars
-    return "", 0
+        if not (8 <= len(comment) <= QUOTE_MAX) or comment in seen:
+            continue
+        seen.add(comment)
+        stars = (interest.get("rating") or {}).get("value") or 0
+        quotes.append({"text": comment, "stars": stars})
+        if len(quotes) >= limit:
+            break
+    return quotes
 
 
 def fetch_detail(kind, item_id):
@@ -251,19 +257,21 @@ def enrich_item(kind, item):
                 item["image"] = detail.get("cover_url") or ""
 
     polite_sleep()
-    comment, stars = best_comment(kind, item["id"])
-    if comment:
-        item["quote"] = comment
+    quotes = hot_comments(kind, item["id"])
+    if quotes:
+        item["quotes"] = quotes
         item["quote_from"] = "豆瓣短评"
-        item["quote_stars"] = stars
     else:
         if not detail:
             polite_sleep()
             detail = fetch_detail(kind, item["id"])
         intro = detail.get("intro") or ""
-        item["quote"] = clean_text(intro, INTRO_MAX) if intro else ""
-        item["quote_from"] = "内容简介" if intro else ""
-        item["quote_stars"] = 0
+        if intro:
+            item["quotes"] = [{"text": clean_text(intro, INTRO_MAX), "stars": 0}]
+            item["quote_from"] = "内容简介"
+        else:
+            item["quotes"] = []
+            item["quote_from"] = ""
     return item
 
 
@@ -425,9 +433,10 @@ def build_dataset(kind, annual_url, json_host, source_title, limit=0):
             print("  封面最终缺失：%s" % item.get("title"))
             item["image"] = ""
 
-    removed = prune_images(kind, {item["id"] for item in kept})
-    if removed:
-        print("  清理旧图 %d 张" % removed)
+    if not limit:
+        removed = prune_images(kind, {item["id"] for item in kept})
+        if removed:
+            print("  清理旧图 %d 张" % removed)
 
     random.Random(SHUFFLE_SEED).shuffle(kept)
 

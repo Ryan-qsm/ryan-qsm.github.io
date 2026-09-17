@@ -53,13 +53,20 @@
       body.appendChild(el("p", "daily-pick__meta", item.meta));
     }
 
-    if (item.quote) {
+    var quotes = [];
+    if (item.quotes && item.quotes.length) {
+      quotes = item.quotes;
+    } else if (item.quote) {
+      quotes = [{ text: item.quote, stars: item.quote_stars || 0 }];
+    }
+    if (quotes.length) {
+      var picked = quotes[Math.floor(Math.random() * quotes.length)];
       var quote = el("blockquote", "daily-pick__quote");
-      quote.appendChild(document.createTextNode(item.quote));
+      quote.appendChild(document.createTextNode(picked.text));
       var fromText = item.quote_from ? "—— " + item.quote_from : "";
-      if (item.quote_stars) {
+      if (picked.stars) {
         var stars = "";
-        for (var i = 0; i < item.quote_stars; i++) stars += "★";
+        for (var i = 0; i < picked.stars; i++) stars += "★";
         fromText += (fromText ? " · " : "") + stars;
       }
       if (fromText) quote.appendChild(el("span", "daily-pick__from", fromText));
