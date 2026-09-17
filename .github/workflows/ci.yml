@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  schedule:
+    # 每天 01:00 UTC（北京时间 09:00）自动抓取最新壁纸并重新发布
+    - cron: '0 1 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -20,6 +24,9 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: 抓取必应壁纸
+        run: python tools/fetch_bing.py
+
       - name: 安装 mkdocs-material 和插件
         run: pip install mkdocs-material mkdocs-glightbox
 
@@ -32,3 +39,4 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
           publish_branch: gh-pages
+          force_orphan: true

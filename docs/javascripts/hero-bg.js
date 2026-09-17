@@ -1,18 +1,20 @@
 (function () {
-  var images = [
-    { src: "assets/bing/bing-20260915.jpg", caption: "斯瓦尔巴群岛玩耍的北极熊幼崽，挪威" },
-    { src: "assets/bing/bing-20260914.jpg", caption: "红绿金刚鹦鹉" },
-    { src: "assets/bing/bing-20260913.jpg", caption: "地肤田，中国" },
-    { src: "assets/bing/bing-20260912.jpg", caption: "米苏里纳群峰，多洛米蒂山脉，威尼托大区，意大利" },
-    { src: "assets/bing/bing-20260911.jpg", caption: "墨西哥近海围猎沙丁鱼饵球的加州海狮，太平洋" },
-    { src: "assets/bing/bing-20260910.jpg", caption: "滨海自由城，法国里维埃拉，法国" },
-    { src: "assets/bing/bing-20260909.jpg", caption: "奥尔韦拉航拍图，安达卢西亚，西班牙" },
-    { src: "assets/bing/bing-20260908.jpg", caption: "安科拉附近的加比特凯尼海滩，卡纳塔克邦，印度" }
-  ];
-
   var baseUrl = "";
   if (document.currentScript && document.currentScript.src) {
     baseUrl = document.currentScript.src.replace(/javascripts\/hero-bg\.js.*$/, "");
+  }
+
+  function applyBackground(images) {
+    var hero = document.querySelector(".home-hero");
+    if (!hero) return;
+
+    var pick = images[Math.floor(Math.random() * images.length)];
+    hero.style.backgroundImage = "url('" + baseUrl + pick.src + "')";
+
+    var credit = hero.querySelector(".home-hero__credit");
+    if (credit) {
+      credit.textContent = pick.caption || "";
+    }
   }
 
   function setHeroBackground() {
@@ -20,13 +22,19 @@
     if (!hero || hero.dataset.bgReady === "1") return;
     hero.dataset.bgReady = "1";
 
-    var pick = images[Math.floor(Math.random() * images.length)];
-    hero.style.backgroundImage = "url('" + baseUrl + pick.src + "')";
-
-    var credit = hero.querySelector(".home-hero__credit");
-    if (credit) {
-      credit.textContent = pick.caption;
-    }
+    fetch(baseUrl + "assets/bing/manifest.json?t=" + Date.now())
+      .then(function (response) {
+        if (!response.ok) throw new Error("manifest 加载失败");
+        return response.json();
+      })
+      .then(function (images) {
+        if (images && images.length) {
+          applyBackground(images);
+        }
+      })
+      .catch(function () {
+        /* 读取失败时保持纯色背景，不影响页面其他功能 */
+      });
   }
 
   function run() {

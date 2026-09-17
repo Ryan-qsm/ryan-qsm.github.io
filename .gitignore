@@ -1,5 +1,8 @@
 # MkDocs 构建产物（由 GitHub Actions 自动生成，无需上传）
 site/
 
+# 必应壁纸（构建时由 tools/fetch_bing.py 自动生成，不入库）
+docs/assets/bing/
+
 # Python 缓存
 __pycache__/
