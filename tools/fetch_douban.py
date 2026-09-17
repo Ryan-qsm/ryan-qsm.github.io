@@ -7,7 +7,8 @@
 - 电影：评分最高榜单（约 58 部，仅含有评分的条目）
 
 每条数据包含：标题、作者/导演信息、豆瓣评分、热门短评（无短评时用简介节选）、
-封面/海报地址（直连豆瓣图床）、豆瓣链接、来源榜单及排名。
+封面/海报（下载到 docs/assets/recommend/images/ 随仓库发布，豆瓣图床禁止站外直连）、
+豆瓣链接、来源榜单及排名。
 
 数据输出到 docs/assets/recommend/books.json 和 movies.json，
 页面脚本（daily-pick.js）按日期轮播展示，每天 9:00（北京时间）切换。
@@ -23,6 +24,8 @@
 import json
 import random
 import re
+import shutil
+import subprocess
 import sys
 import time
 import urllib.request
@@ -53,6 +56,7 @@ COLLECTION_ID_RE = re.compile(r"subject_collection/(\d+)")
 QUOTE_MAX = 160
 INTRO_MAX = 140
 SLEEP_RANGE = (0.8, 1.5)
+CURL = shutil.which("curl")
 
 HEADERS = {
     "User-Agent": (
@@ -64,7 +68,7 @@ HEADERS = {
 }
 
 
-def http_get(url, referer, timeout=30, retries=3):
+def http_get(url, referer, timeout=30, retries=3, accept=None):
     """带重试的 GET 请求，返回响应体 bytes"""
     last_error = None
     for attempt in range(1, retries + 1):
@@ -72,6 +76,8 @@ def http_get(url, referer, timeout=30, retries=3):
             headers = dict(HEADERS)
             if referer:
                 headers["Referer"] = referer
+            if accept:
+                headers["Accept"] = accept
             request = urllib.request.Request(url, headers=headers)
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 return response.read()
@@ -136,8 +142,88 @@ def fetch_detail(kind, item_id):
 
 
 def normalize_book_cover(url):
-    """书籍封面用中等尺寸（原链接为 l 大图，约 600KB；m 约 100KB）"""
-    return re.sub(r"/view/subject/[a-z]+/", "/view/subject/m/", url or "")
+    """书籍封面用最小尺寸（s：270px 宽，约 12~30KB；页面显示宽 150px，足够清晰）"""
+    return re.sub(r"/view/subject/[a-z]+/", "/view/subject/s/", url or "")
+
+
+def download_file(url, referer, target, timeout=60):
+    """下载文件到 target。
+
+    图片优先用 curl：豆瓣 CDN 会对 Python urllib 的 TLS 指纹返回反爬挑战页
+    （HTTP 200 但内容是脚本而非图片），curl/.NET 等正常客户端不受影响。
+    """
+    if CURL:
+        args = [
+            CURL,
+            "-s",
+            "-f",
+            "--location",
+            "--retry",
+            "3",
+            "--retry-delay",
+            "2",
+            "--max-time",
+            str(timeout),
+            "-H",
+            "User-Agent: " + HEADERS["User-Agent"],
+            "-H",
+            "Referer: " + referer,
+            "-o",
+            str(target),
+            url,
+        ]
+        subprocess.run(args, capture_output=True)
+        if target.exists() and target.stat().st_size > 1024:
+            return True
+        if target.exists():
+            target.unlink()
+        return False
+
+    try:
+        data = http_get(url, referer, accept="image/*,*/*;q=0.8")
+    except RuntimeError:
+        return False
+    if len(data) > 1024:
+        target.write_bytes(data)
+        return True
+    return False
+
+
+def download_image(kind, item):
+    """下载封面/海报到本地，成功时把 item['image'] 改为本地相对路径"""
+    remote = item.get("image") or ""
+    if not remote:
+        return False
+    img_dir = OUT_DIR / "images" / ("%ss" % kind)
+    img_dir.mkdir(parents=True, exist_ok=True)
+    target = img_dir / ("%s.jpg" % item["id"])
+    local_path = "assets/recommend/images/%ss/%s.jpg" % (kind, item["id"])
+    if target.exists() and target.stat().st_size > 1024:
+        item["image"] = local_path
+        return True
+
+    candidates = [remote]
+    if kind == "book" and "/view/subject/s/" in remote:
+        candidates.append(remote.replace("/view/subject/s/", "/view/subject/m/"))
+    referer = "https://%s.douban.com/" % kind
+    for url in candidates:
+        time.sleep(random.uniform(0.25, 0.55))
+        if download_file(url, referer, target):
+            item["image"] = local_path
+            return True
+    return False
+
+
+def prune_images(kind, keep_ids):
+    """删除不再引用的旧图"""
+    img_dir = OUT_DIR / "images" / ("%ss" % kind)
+    removed = 0
+    if img_dir.exists():
+        for path in img_dir.glob("*.jpg"):
+            if path.stem not in keep_ids:
+                path.unlink()
+                removed += 1
+    return removed
 
 
 def normalize_book_url(url, item_id):
@@ -307,6 +393,7 @@ def build_dataset(kind, annual_url, json_host, source_title, limit=0):
     print("榜单 %d 个，条目 %d 条，开始补全短评/简介（约需数分钟）…" % (len(lists), len(items)))
 
     kept = []
+    image_ok = 0
     for index, item in enumerate(items, 1):
         try:
             item = enrich_item(kind, item)
@@ -315,12 +402,32 @@ def build_dataset(kind, annual_url, json_host, source_title, limit=0):
         if kind == "book":
             item["image"] = normalize_book_cover(item.get("image"))
             item["url"] = normalize_book_url(item.get("url"), item["id"])
-        if not item.get("rating") or not item.get("image"):
-            print("  [%d/%d] 跳过（缺评分或封面）：%s" % (index, len(items), item.get("title")))
+        if not item.get("rating"):
+            print("  [%d/%d] 跳过（缺评分）：%s" % (index, len(items), item.get("title")))
             continue
+        if download_image(kind, item):
+            image_ok += 1
+        else:
+            print("  [%d/%d] 封面下载失败（稍后重试）：%s" % (index, len(items), item.get("title")))
         kept.append(item)
         if index % 10 == 0 or index == len(items):
             print("  进度：%d/%d" % (index, len(items)))
+
+    failed = [item for item in kept if not str(item.get("image", "")).startswith("assets/")]
+    if failed:
+        print("  重试 %d 张失败的图片…" % len(failed))
+        time.sleep(5)
+        for item in failed:
+            if download_image(kind, item):
+                image_ok += 1
+    for item in kept:
+        if not str(item.get("image", "")).startswith("assets/"):
+            print("  封面最终缺失：%s" % item.get("title"))
+            item["image"] = ""
+
+    removed = prune_images(kind, {item["id"] for item in kept})
+    if removed:
+        print("  清理旧图 %d 张" % removed)
 
     random.Random(SHUFFLE_SEED).shuffle(kept)
 
@@ -336,7 +443,10 @@ def build_dataset(kind, annual_url, json_host, source_title, limit=0):
     out_path.write_text(
         json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
     )
-    print("已写入：%s（%d 条，%.0f KB）" % (out_path, len(kept), out_path.stat().st_size / 1024))
+    print(
+        "已写入：%s（%d 条，%.0f KB，本地图片 %d 张）"
+        % (out_path, len(kept), out_path.stat().st_size / 1024, image_ok)
+    )
     return len(kept)
 
 
