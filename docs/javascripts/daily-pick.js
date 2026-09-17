@@ -26,16 +26,19 @@
     var item = items[dayIndex() % items.length];
 
     var coverWrap = el("div", "daily-pick__cover-wrap");
-    var img = el("img", "daily-pick__cover");
-    img.alt = item.title;
-    img.loading = "lazy";
-    img.referrerPolicy = "no-referrer-when-downgrade";
-    img.src = item.image;
-    img.addEventListener("error", function () {
+    if (item.image) {
+      var img = el("img", "daily-pick__cover");
+      img.alt = item.title;
+      img.loading = "lazy";
+      img.src = baseUrl + item.image;
+      img.addEventListener("error", function () {
+        coverWrap.classList.add("daily-pick__cover-wrap--empty");
+        if (img.parentNode) img.parentNode.removeChild(img);
+      });
+      coverWrap.appendChild(img);
+    } else {
       coverWrap.classList.add("daily-pick__cover-wrap--empty");
-      if (img.parentNode) img.parentNode.removeChild(img);
-    });
-    coverWrap.appendChild(img);
+    }
 
     var body = el("div", "daily-pick__body");
 
@@ -86,9 +89,9 @@
 
   function load(kind) {
     if (!cache[kind]) {
-      cache[kind] = fetch(baseUrl + "assets/recommend/" + kind + "s.json").then(function (
-        response
-      ) {
+      cache[kind] = fetch(
+        baseUrl + "assets/recommend/" + kind + "s.json?t=" + Math.floor(Date.now() / 600000)
+      ).then(function (response) {
         if (!response.ok) throw new Error("数据加载失败");
         return response.json();
       });
