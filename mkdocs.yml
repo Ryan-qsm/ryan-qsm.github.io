@@ -67,6 +67,7 @@ extra_css:
 
 extra_javascript:
   - javascripts/hero-bg.js
+  - javascripts/daily-pick.js
 
 extra:
   social:
@@ -80,7 +81,12 @@ nav:
   - 主页: index.md
   - 课程: course/index.md
   - 旅行: travel/index.md
-  - 文学电影: literature/index.md
+  - 文学:
+      - 每日书籍推荐: literature/index.md
+      - 我的阅读: literature/reading.md
+  - 电影:
+      - 每日电影推荐: movie/index.md
+      - 我的观影: movie/watching.md
   - 美食: food/index.md
   - 学习记录: study/index.md
   - 体育: sports/index.md

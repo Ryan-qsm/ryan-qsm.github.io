@@ -14,13 +14,21 @@
 
     [:octicons-arrow-right-24: 进入](travel/index.md)
 
--   :material-book-open-variant:{ .lg .middle } **文学电影**
+-   :material-book-open-variant:{ .lg .middle } **文学**
 
     ---
 
-    书与光影的对话
+    每日书籍推荐与阅读记录
 
     [:octicons-arrow-right-24: 进入](literature/index.md)
+
+-   :material-movie-open:{ .lg .middle } **电影**
+
+    ---
+
+    每日电影推荐与观影记录
+
+    [:octicons-arrow-right-24: 进入](movie/index.md)
 
 -   :material-food:{ .lg .middle } **美食**
 

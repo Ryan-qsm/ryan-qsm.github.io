@@ -48,10 +48,119 @@ body[data-md-color-scheme="slate"] .md-header {
   -webkit-backdrop-filter: blur(8px);
 }
 
-/* ----- 首页卡片：首张跨两列，网格排满 ----- */
-@media screen and (min-width: 60em) {
-  .home-cards > ul > li:first-child {
-    grid-column: span 2;
+/* ----- 首页卡片网格（6 张卡，3×2 均匀排布） ----- */
+
+/* ----- 每日推荐卡片（书籍/电影） ----- */
+.daily-pick {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin: 24px 0 8px;
+  padding: 20px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(120, 90, 50, 0.12);
+  box-shadow: 0 6px 24px rgba(60, 40, 20, 0.08);
+}
+
+body[data-md-color-scheme="slate"] .daily-pick {
+  background: rgba(28, 32, 42, 0.72);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+}
+
+.daily-pick__cover-wrap {
+  flex: 0 0 150px;
+}
+
+.daily-pick__cover-wrap--empty {
+  display: none;
+}
+
+.daily-pick__cover {
+  display: block;
+  width: 150px;
+  border-radius: 8px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.daily-pick__body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.daily-pick__title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 6px;
+  font-size: 1.45rem;
+  font-weight: 700;
+}
+
+.daily-pick__score {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #b8860b;
+  white-space: nowrap;
+}
+
+body[data-md-color-scheme="slate"] .daily-pick__score {
+  color: #d9a94a;
+}
+
+.daily-pick__meta {
+  margin: 0 0 10px;
+  font-size: 0.85rem;
+  opacity: 0.72;
+}
+
+.daily-pick__quote {
+  margin: 10px 0;
+  padding: 10px 14px;
+  border-left: 3px solid #d9b98a;
+  border-radius: 0 8px 8px 0;
+  background: rgba(217, 185, 138, 0.14);
+  font-size: 0.92rem;
+  line-height: 1.75;
+  color: rgba(58, 48, 38, 0.92);
+}
+
+body[data-md-color-scheme="slate"] .daily-pick__quote {
+  background: rgba(217, 185, 138, 0.1);
+  color: rgba(232, 228, 220, 0.88);
+}
+
+.daily-pick__from {
+  display: block;
+  margin-top: 6px;
+  font-size: 0.78rem;
+  opacity: 0.62;
+}
+
+.daily-pick__source {
+  margin: 12px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.75;
+}
+
+.daily-pick__link {
+  margin-left: 10px;
+}
+
+.daily-pick__loading {
+  opacity: 0.7;
+}
+
+@media screen and (max-width: 600px) {
+  .daily-pick {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .daily-pick__body {
+    width: 100%;
   }
 }
 
