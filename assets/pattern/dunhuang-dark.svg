@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 240 240">
+  <defs>
+    <g id="lotus">
+      <g fill="none" stroke="#d8b06a" stroke-width="1.1" opacity="0.24">
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z"/>
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z" transform="rotate(45)"/>
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z" transform="rotate(90)"/>
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z" transform="rotate(135)"/>
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z" transform="rotate(180)"/>
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z" transform="rotate(225)"/>
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z" transform="rotate(270)"/>
+        <path d="M0,-14 C7,-22 7,-36 0,-44 C-7,-36 -7,-22 0,-14 Z" transform="rotate(315)"/>
+      </g>
+      <circle r="8" fill="none" stroke="#7fa3cc" stroke-width="1.1" opacity="0.24"/>
+      <circle r="2.6" fill="#d8b06a" opacity="0.4"/>
+      <g fill="#b08954" opacity="0.3">
+        <circle cx="0" cy="-64" r="1.7"/>
+        <circle cx="32" cy="-55.4" r="1.7"/>
+        <circle cx="55.4" cy="-32" r="1.7"/>
+        <circle cx="64" cy="0" r="1.7"/>
+        <circle cx="55.4" cy="32" r="1.7"/>
+        <circle cx="32" cy="55.4" r="1.7"/>
+        <circle cx="0" cy="64" r="1.7"/>
+        <circle cx="-32" cy="55.4" r="1.7"/>
+        <circle cx="-55.4" cy="32" r="1.7"/>
+        <circle cx="-64" cy="0" r="1.7"/>
+        <circle cx="-55.4" cy="-32" r="1.7"/>
+        <circle cx="-32" cy="-55.4" r="1.7"/>
+      </g>
+    </g>
+    <g id="mini">
+      <g fill="none" stroke="#8fb08f" stroke-width="1" opacity="0.22">
+        <path d="M0,-8 C4,-13 4,-20 0,-25 C-4,-20 -4,-13 0,-8 Z"/>
+        <path d="M0,-8 C4,-13 4,-20 0,-25 C-4,-20 -4,-13 0,-8 Z" transform="rotate(90)"/>
+        <path d="M0,-8 C4,-13 4,-20 0,-25 C-4,-20 -4,-13 0,-8 Z" transform="rotate(180)"/>
+        <path d="M0,-8 C4,-13 4,-20 0,-25 C-4,-20 -4,-13 0,-8 Z" transform="rotate(270)"/>
+      </g>
+      <circle r="2.2" fill="#d8b06a" opacity="0.32"/>
+    </g>
+  </defs>
+
+  <use href="#lotus" x="120" y="120"/>
+  <use href="#lotus" x="0" y="0"/>
+  <use href="#lotus" x="240" y="0"/>
+  <use href="#lotus" x="0" y="240"/>
+  <use href="#lotus" x="240" y="240"/>
+
+  <use href="#mini" x="120" y="0"/>
+  <use href="#mini" x="0" y="120"/>
+  <use href="#mini" x="240" y="120"/>
+  <use href="#mini" x="120" y="240"/>
+</svg>
